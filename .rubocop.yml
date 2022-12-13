@@ -1,0 +1,14 @@
+AllCops:
+  NewCops: enable
+
+Metrics:
+  Enabled: false
+
+Naming/VariableNumber:
+  CheckSymbols: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/MutableConstant:
+  Enabled: false
