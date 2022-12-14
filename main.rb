@@ -30,7 +30,7 @@ YEARS.product(PREF_CODES) do |year, pref_code|
   print "Processing year=#{year} pref_code=#{pref_code} ..."
 
   zip_url = N03Util.zip_url(year:, pref_code:)
-  features = N03Util.features(year:, pref_code:, cache_dir: TMP_DIR)
+  features = N03Util.features(year:, pref_code:, cache_dir: ENV['CI'] ? nil : TMP_DIR)
   pref_name = features.first['properties']['N03_001']
 
   collection_id = "#{catalog_id}-#{year}0101-#{pref_code}"
