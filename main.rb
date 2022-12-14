@@ -9,7 +9,7 @@ require_relative 'n03_util'
 require 'active_support/core_ext/big_decimal/conversions'
 require 'oj'
 
-YEARS = [2018, 2019, 2020, 2021, 2022]
+YEARS = [2022, 2018]
 PREF_CODES = (1..47).map { |i| i.to_s.rjust(2, '0') } #=> ["01", "02", "03", ..., "47"]
 
 TMP_DIR = File.expand_path('tmp', __dir__)
