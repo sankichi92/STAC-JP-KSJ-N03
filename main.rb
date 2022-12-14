@@ -38,8 +38,8 @@ YEARS.product(PREF_CODES) do |year, pref_code|
     type: 'Collection',
     stac_version: '1.0.0',
     id: collection_id,
-    title: "#{year}年#{pref_name}の行政区域界",
-    description: "#{year}年1月1日時点における#{pref_name}の行政区域界のコレクション。",
+    title: "#{year} #{pref_name}",
+    description: "#{year}年#{pref_name}の行政区域界コレクション。",
     summaries: {
       N03_001: pref_name
     },
@@ -62,7 +62,8 @@ YEARS.product(PREF_CODES) do |year, pref_code|
         url: 'https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-v3_1.html'
       },
       {
-        name: 'sankichi92',
+        name: '@sankichi92',
+        description: 'STACカタログへの加工とホスティングを実施',
         roles: %w[processor host],
         url: 'https://github.com/sankichi92'
       }
@@ -72,7 +73,7 @@ YEARS.product(PREF_CODES) do |year, pref_code|
         rel: 'derived_from',
         href: zip_url,
         type: 'application/zip',
-        title: '国土数値情報（行政区域データ）'
+        title: '国土数値情報ダウンロードサイトの加工元コンテンツ'
       }
     ]
   )
@@ -82,8 +83,14 @@ YEARS.product(PREF_CODES) do |year, pref_code|
     item = STAC::Item.from_hash(
       feature.merge(
         'id' => "#{collection_id}-#{feature['properties']['N03_007']}",
+        'properties' => feature['properties'].merge(
+          'title' => "#{feature['properties']['N03_003']feature['properties']['N03_004']}"
+          'datetime' => Time.new(year).iso8601,
+        )
         'assets' => {
           'data' => {
+            'title' => '加工元データ',
+            'description' => "加工元となった#{year}年#{pref_name}の行政区域データ。GML、Shapefile、GeoJSON を含む ZIP ファイル。",
             'href' => zip_url,
             'type' => 'application/zip',
             'roles' => %w[data]
@@ -91,7 +98,6 @@ YEARS.product(PREF_CODES) do |year, pref_code|
         }
       )
     )
-    item.datetime = Time.new(year)
     collection.add_item(item)
   end
 
