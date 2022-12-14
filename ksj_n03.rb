@@ -6,37 +6,39 @@ require 'open-uri'
 require 'active_support/core_ext/object/deep_dup'
 require 'zip'
 
-module N03Util
+class KSJN03
   class Error < StandardError; end
 
-  def self.features(year:, pref_code:, cache_dir:)
-    geojson_str = read_geojson(year:, pref_code:, cache_dir:)
-    geojson_hash = JSON.parse(geojson_str, decimal_class: BigDecimal)
-    N03Util.preprocess(geojson_hash)
+  attr_reader :year, :pref_code
+
+  def initialize(year:, pref_code:)
+    @year = year
+    @pref_code = pref_code
   end
 
-  def self.read_geojson(year:, pref_code:, cache_dir:)
-    cache_path = cache_dir && File.join(cache_dir, "#{pref_code}-#{year}.geojson")
-    return File.read(cache_path) if cache_path && File.exist?(cache_path)
+  def zip_url
+    y = year.to_i > 2019 ? year : year.to_s[-2, 2] # 2019年以前は最後の2文字
+    "https://nlftp.mlit.go.jp/ksj/gml/data/N03/N03-#{year}/N03-#{y}0101_#{pref_code}_GML.zip"
+  end
 
-    url = zip_url(year:, pref_code:)
-    geojson_str = URI(url).open do |io|
+  def extract_shikuchoson_features
+    feature_collection = JSON.parse(read_geojson, decimal_class: BigDecimal)
+    preprocess(feature_collection['features'])
+  end
+
+  private
+
+  def read_geojson
+    URI(zip_url).open do |io|
       Zip::File.open(io) do |zip_file|
         geojson_entry = zip_file.glob('**/*.geojson').first
         geojson_entry.get_input_stream.read
       end
     end
-    File.write(cache_path, geojson_str) if cache_path
-    geojson_str
   end
 
-  def self.zip_url(year:, pref_code:)
-    y = year.to_i > 2019 ? year : year.to_s[-2, 2] # 2019年以前は最後の2文字
-    "https://nlftp.mlit.go.jp/ksj/gml/data/N03/N03-#{year}/N03-#{y}0101_#{pref_code}_GML.zip"
-  end
-
-  def self.preprocess(geojson)
-    code_to_features = geojson['features']
+  def preprocess(features)
+    code_to_features = features
                        .reject { |f| f['properties']['N03_007'].nil? } # 所属未定地を除く
                        .group_by { |f| f['properties']['N03_007'] } # 行政区域コードごとにまとめる
 

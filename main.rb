@@ -3,7 +3,7 @@
 require 'fileutils'
 require 'time'
 require 'stac'
-require_relative 'n03_util'
+require_relative 'ksj_n03'
 
 # 以下は BigDecimal を元のまま JSON 出力するために必要
 require 'active_support/core_ext/big_decimal/conversions'
@@ -12,10 +12,7 @@ require 'oj'
 YEARS = [2022, 2018]
 PREF_CODES = (1..47).map { |i| i.to_s.rjust(2, '0') } #=> ["01", "02", "03", ..., "47"]
 
-TMP_DIR = File.expand_path('tmp', __dir__)
 OUTPUT_DIR = File.expand_path('output', __dir__)
-
-FileUtils.mkdir_p(TMP_DIR)
 FileUtils.mkdir_p(OUTPUT_DIR)
 
 catalog_id = 'JP-KSJ-N03'
@@ -29,8 +26,8 @@ catalog = STAC::Catalog.root(
 YEARS.product(PREF_CODES) do |year, pref_code|
   print "Processing year=#{year} pref_code=#{pref_code} ..."
 
-  zip_url = N03Util.zip_url(year:, pref_code:)
-  features = N03Util.features(year:, pref_code:, cache_dir: ENV['CI'] ? nil : TMP_DIR)
+  ksjn03 = KSJN03.new(year:, pref_code:)
+  features = ksjn03.extract_shikuchoson_features
   pref_name = features.first['properties']['N03_001']
 
   collection_id = "#{catalog_id}-#{year}0101-#{pref_code}"
@@ -71,7 +68,7 @@ YEARS.product(PREF_CODES) do |year, pref_code|
     links: [
       {
         rel: 'derived_from',
-        href: zip_url,
+        href: ksjn03.zip_url,
         type: 'application/zip',
         title: '国土数値情報ダウンロードサイトの加工元コンテンツ'
       }
@@ -84,14 +81,14 @@ YEARS.product(PREF_CODES) do |year, pref_code|
       feature.merge(
         'id' => "#{collection_id}-#{feature['properties']['N03_007']}",
         'properties' => feature['properties'].merge(
-          'title' => "#{feature['properties']['N03_003']feature['properties']['N03_004']}"
-          'datetime' => Time.new(year).iso8601,
-        )
+          'title' => "#{feature['properties']['N03_003']}#{feature['properties']['N03_004']}",
+          'datetime' => Time.new(year).iso8601
+        ),
         'assets' => {
           'data' => {
             'title' => '加工元データ',
             'description' => "加工元となった#{year}年#{pref_name}の行政区域データ。GML、Shapefile、GeoJSON を含む ZIP ファイル。",
-            'href' => zip_url,
+            'href' => ksjn03.zip_url,
             'type' => 'application/zip',
             'roles' => %w[data]
           }
