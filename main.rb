@@ -37,9 +37,6 @@ YEARS.product(PREF_CODES) do |year, pref_code|
     id: collection_id,
     title: "#{year} #{pref_name}",
     description: "#{year}年#{pref_name}の行政区域界コレクション。",
-    summaries: {
-      N03_001: pref_name
-    },
     extent: {
       spatial: {
         bbox: features.map { |f| f['bbox'] }.inject([180, 90, -180, -90]) do |res, bbox|
