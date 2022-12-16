@@ -15,7 +15,7 @@ PREF_CODES = (1..47).map { |i| i.to_s.rjust(2, '0') } #=> ["01", "02", "03", ...
 OUTPUT_DIR = File.expand_path('output', __dir__)
 FileUtils.mkdir_p(OUTPUT_DIR)
 
-catalog_id = 'JP-KSJ-N03'
+catalog_id = 'jp-ksj-n03'
 catalog = STAC::Catalog.root(
   id: catalog_id,
   title: '日本の行政区域界',
@@ -30,11 +30,10 @@ YEARS.product(PREF_CODES) do |year, pref_code|
   features = ksjn03.extract_shikuchoson_features
   pref_name = features.first['properties']['N03_001']
 
-  collection_id = "#{catalog_id}-#{year}0101-#{pref_code}"
   collection = STAC::Collection.from_hash(
     type: 'Collection',
     stac_version: '1.0.0',
-    id: collection_id,
+    id: "#{catalog_id}-#{year}0101-#{pref_code}",
     title: "#{year} #{pref_name}",
     description: "#{year}年#{pref_name}の行政区域界コレクション。",
     extent: {
@@ -76,7 +75,7 @@ YEARS.product(PREF_CODES) do |year, pref_code|
   features.each do |feature|
     item = STAC::Item.from_hash(
       feature.merge(
-        'id' => "#{collection_id}-#{feature['properties']['N03_007']}",
+        'id' => "#{catalog_id}-#{year}0101-#{feature['properties']['N03_007']}",
         'properties' => feature['properties'].merge(
           'title' => "#{feature['properties']['N03_003']}#{feature['properties']['N03_004']}",
           'datetime' => Time.new(year).iso8601
