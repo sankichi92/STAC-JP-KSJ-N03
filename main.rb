@@ -38,9 +38,11 @@ YEARS.product(PREF_CODES) do |year, pref_code|
     description: "#{year}年#{pref_name}の行政区域界コレクション。",
     extent: {
       spatial: {
-        bbox: features.map { |f| f['bbox'] }.inject([180, 90, -180, -90]) do |res, bbox|
-          [[res[0], bbox[0]].min, [res[1], bbox[1]].min, [res[2], bbox[2]].max, [res[3], bbox[3]].max]
-        end
+        bbox: [
+          features.map { |f| f['bbox'] }.inject([180, 90, -180, -90]) do |res, bbox|
+            [[res[0], bbox[0]].min, [res[1], bbox[1]].min, [res[2], bbox[2]].max, [res[3], bbox[3]].max]
+          end
+        ]
       },
       temporal: {
         interval: [[Time.new(year).utc.iso8601, (Time.new(year + 1) - 1).utc.iso8601]]
