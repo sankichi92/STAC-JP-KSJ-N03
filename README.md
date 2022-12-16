@@ -4,3 +4,6 @@
 
 GitHub Actions で STAC カタログを生成し、GitHub Pages にホストしている:  
 https://jp-ksj-n03-stac.sankichi.app/
+
+FOSS4G Advent Calendar 2022 16日目の記事のために作成:
+https://qiita.com/sankichi92/items/b3376af497639319a745
