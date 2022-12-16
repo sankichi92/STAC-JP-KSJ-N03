@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 gem 'activesupport'
 gem 'oj'
 gem 'rubyzip'
-gem 'stac', git: 'https://github.com/sankichi92/stac-ruby.git', branch: 'main'
+gem 'stac'
 
 group :development do
   gem 'rubocop'

@@ -1,10 +1,3 @@
-GIT
-  remote: https://github.com/sankichi92/stac-ruby.git
-  revision: cb753f7deca8ec59aa6884456acbe267509e7e6f
-  branch: main
-  specs:
-    stac (0.2.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -47,6 +40,7 @@ GEM
     ruby-progressbar (1.11.0)
     rubyzip (2.3.2)
     sorbet-runtime (0.5.10575)
+    stac (0.3.0)
     syntax_tree (4.3.0)
       prettier_print (>= 1.0.2)
     tzinfo (2.0.5)
@@ -63,7 +57,7 @@ DEPENDENCIES
   rubocop
   ruby-lsp
   rubyzip
-  stac!
+  stac
 
 BUNDLED WITH
    2.3.26
