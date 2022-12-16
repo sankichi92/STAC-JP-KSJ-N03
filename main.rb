@@ -80,7 +80,7 @@ YEARS.product(PREF_CODES) do |year, pref_code|
         'id' => "#{catalog_id}-#{year}0101-#{feature['properties']['N03_007']}",
         'properties' => feature['properties'].merge(
           'title' => "#{feature['properties']['N03_003']}#{feature['properties']['N03_004']}",
-          'datetime' => Time.new(year).iso8601
+          'datetime' => Time.new(year).utc.iso8601
         ),
         'assets' => {
           'data' => {
